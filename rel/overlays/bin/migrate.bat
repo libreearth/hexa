@@ -1,0 +1,1 @@
+call "%~dp0\hexa" eval Hexa.Release.migrate
