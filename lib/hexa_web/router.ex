@@ -57,6 +57,7 @@ defmodule HexaWeb.Router do
       on_mount: [{HexaWeb.UserAuth, :ensure_authenticated}, HexaWeb.Nav] do
       live "/:profile_username/songs/new", ProfileLive, :new
       live "/:profile_username", ProfileLive, :show
+      live "/:profile_username/hexa", HexaLive, :index
       live "/profile/settings", SettingsLive, :edit
     end
   end

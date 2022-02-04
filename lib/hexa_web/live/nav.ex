@@ -2,7 +2,7 @@ defmodule HexaWeb.Nav do
   import Phoenix.LiveView
 
   alias Hexa.{Accounts, MediaLibrary}
-  alias HexaWeb.{ProfileLive, SettingsLive, MapLive}
+  alias HexaWeb.{ProfileLive, SettingsLive, MapLive, HexaLive}
 
   def on_mount(:default, _params, _session, socket) do
     {:cont,
@@ -26,6 +26,9 @@ defmodule HexaWeb.Nav do
 
         {MapLive, _} ->
             :map
+
+        {HexaLive, _} ->
+            :hexa 
 
         {_, _} ->
           nil
