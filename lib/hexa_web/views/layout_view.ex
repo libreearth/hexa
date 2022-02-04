@@ -76,6 +76,7 @@ defmodule HexaWeb.LayoutView do
 
       <:link navigate={profile_path(@current_user)}>View Profile</:link>
       <:link navigate={Routes.settings_path(Endpoint, :edit)}>Settings</:link>
+      <:link navigate={Routes.map_path(Endpoint, :index)}>Map</:link>
       <:link href={Routes.o_auth_callback_path(Endpoint, :sign_out)} method={:delete}>Sign out</:link>
     </.dropdown>
     """

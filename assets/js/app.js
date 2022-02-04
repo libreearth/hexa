@@ -2,6 +2,7 @@ import "phoenix_html"
 import {Socket} from "phoenix"
 import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
+import maphook from "./map"
 
 let nowSeconds = () => Math.round(Date.now() / 1000)
 let rand = (min, max) => Math.floor(Math.random() * (max - min) + min)
@@ -11,6 +12,8 @@ let execJS = (selector, attr) => {
 }
 
 let Hooks = {}
+
+Hooks.Map = maphook
 
 Hooks.Flash = {
   mounted(){
