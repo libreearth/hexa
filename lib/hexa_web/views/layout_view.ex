@@ -34,6 +34,15 @@ defmodule HexaWeb.LayoutView do
     <div class="space-y-1">
       <%= if @current_user do %>
         <.link
+          navigate={Routes.map_path(Endpoint, :index)}
+          class={"text-gray-700 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md #{if @active_tab == :map, do: "bg-gray-200", else: "hover:bg-gray-50"}"}
+          aria-current={if @active_tab == :map, do: "true", else: "false"}
+        >
+          <.icon name={:map} outlined class="text-gray-400 group-hover:text-gray-500 mr-3 flex-shrink-0 h-6 w-6"/>
+          Map
+        </.link>
+
+        <.link
           navigate={profile_path(@current_user)}
           class={"text-gray-700 hover:text-gray-900 group flex items-center px-2 py-2 text-sm font-medium rounded-md #{if @active_tab == :profile, do: "bg-gray-200", else: "hover:bg-gray-50"}"}
           aria-current={if @active_tab == :profile, do: "true", else: "false"}
@@ -76,7 +85,6 @@ defmodule HexaWeb.LayoutView do
 
       <:link navigate={profile_path(@current_user)}>View Profile</:link>
       <:link navigate={Routes.settings_path(Endpoint, :edit)}>Settings</:link>
-      <:link navigate={Routes.map_path(Endpoint, :index)}>Map</:link>
       <:link href={Routes.o_auth_callback_path(Endpoint, :sign_out)} method={:delete}>Sign out</:link>
     </.dropdown>
     """
