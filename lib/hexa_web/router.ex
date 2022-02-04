@@ -58,6 +58,7 @@ defmodule HexaWeb.Router do
       live "/:profile_username/songs/new", ProfileLive, :new
       live "/:profile_username", ProfileLive, :show
       live "/:profile_username/hexa", HexaLive, :index
+      live "/:profile_username/hexa/new", HexaLive, :new
       live "/profile/settings", SettingsLive, :edit
     end
   end
