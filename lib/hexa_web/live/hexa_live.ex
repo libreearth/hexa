@@ -5,6 +5,8 @@ defmodule HexaWeb.HexaLive do
   
   alias HexaWeb.MapComponent
   alias HexaWeb.Endpoint
+  alias HexaWeb.LayoutComponent
+  alias HexaWeb.HexaLive.UploadFormComponent
 
   def render(assigns) do
     ~H"""
@@ -38,5 +40,41 @@ defmodule HexaWeb.HexaLive do
         current_user: current_user
       )
     }
+  end
+
+  def handle_params(params, _url, socket) do
+    LayoutComponent.hide_modal()
+    {:noreply, socket |> apply_action(socket.assigns.live_action, params)}
+  end
+
+  defp apply_action(socket, :new, _params) do
+    if socket.assigns.owns_profile? do
+      socket
+      |> assign(:page_title, "Add Hexa")
+      |> assign(:song, %MediaLibrary.Song{})
+      |> show_upload_modal()
+    else
+      socket
+      |> put_flash(:error, "You can't do that")
+      |> redirect(to: profile_path(socket.assigns.current_user))
+    end
+  end
+
+  defp apply_action(socket, :index, _params) do
+    socket
+    |> assign(:page_title, "Listing Hexas")
+  end
+
+  defp show_upload_modal(socket) do
+    LayoutComponent.show_modal(UploadFormComponent, %{
+      id: :new,
+      confirm: {"Save", type: "submit", form: "song-form"},
+      patch: Routes.hexa_path(Endpoint, :index, socket.assigns.current_user.username),
+      song: socket.assigns.song,
+      title: socket.assigns.page_title,
+      current_user: socket.assigns.current_user
+    })
+
+    socket
   end
 end
