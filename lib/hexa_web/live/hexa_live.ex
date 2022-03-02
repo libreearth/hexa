@@ -1,12 +1,12 @@
 defmodule HexaWeb.HexaLive do
   use HexaWeb, :live_view
 
-  alias Hexa.{MediaLibrary, Accounts}
+  alias Hexa.{MediaLibrary, ImageLibrary, Accounts}
   
   alias HexaWeb.MapComponent
   alias HexaWeb.Endpoint
   alias HexaWeb.LayoutComponent
-  alias HexaWeb.HexaLive.UploadFormComponent
+  alias HexaWeb.HexaLive.ImageUploadFormComponent
 
   def render(assigns) do
     ~H"""
@@ -51,7 +51,7 @@ defmodule HexaWeb.HexaLive do
     if socket.assigns.owns_profile? do
       socket
       |> assign(:page_title, "Add Hexa")
-      |> assign(:song, %MediaLibrary.Song{})
+      |> assign(:image, %ImageLibrary.Image{})
       |> show_upload_modal()
     else
       socket
@@ -66,11 +66,11 @@ defmodule HexaWeb.HexaLive do
   end
 
   defp show_upload_modal(socket) do
-    LayoutComponent.show_modal(UploadFormComponent, %{
+    LayoutComponent.show_modal(ImageUploadFormComponent, %{
       id: :new,
-      confirm: {"Save", type: "submit", form: "song-form"},
+      confirm: {"Save", type: "submit", form: "image-form"},
       patch: Routes.hexa_path(Endpoint, :index, socket.assigns.current_user.username),
-      song: socket.assigns.song,
+      image: socket.assigns.image,
       title: socket.assigns.page_title,
       current_user: socket.assigns.current_user
     })
