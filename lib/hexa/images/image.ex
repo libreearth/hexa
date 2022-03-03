@@ -10,16 +10,14 @@ defmodule Hexa.ImageLibrary.Image do
     field :image_url, :string
     field :image_filepath, :string
     field :image_filename, :string
-    field :image_filesize, :integer, default: 0
-    field :server_ip, EctoNetwork.INET
     belongs_to :user, Accounts.User
 
     timestamps()
   end
 
   @doc false
-  def changeset(song, attrs) do
-    song
+  def changeset(image, attrs) do
+    image
     |> cast(attrs, [:title])
     |> validate_required([:title])
     |> unique_constraint(:title,
@@ -30,11 +28,6 @@ defmodule Hexa.ImageLibrary.Image do
 
   def put_user(%Ecto.Changeset{} = changeset, %Accounts.User{} = user) do
     put_assoc(changeset, :user, user)
-  end
-
-  def put_stats(%Ecto.Changeset{} = changeset, %Hexa.MP3Stat{} = stat) do
-    changeset
-    |> Ecto.Changeset.put_change(:image_filesize, stat.size)
   end
 
   
@@ -50,11 +43,6 @@ defmodule Hexa.ImageLibrary.Image do
     else
       changeset
     end
-  end
-
-  def put_server_ip(%Ecto.Changeset{} = changeset) do
-    server_ip = Hexa.config([:files, :server_ip])
-    Ecto.Changeset.cast(changeset, %{server_ip: server_ip}, [:server_ip])
   end
 
   defp image_url(filename) do

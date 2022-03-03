@@ -33,7 +33,6 @@ defmodule Hexa.ImageLibrary do
           chset
           |> Image.put_user(user)
           |> Image.put_image_path()
-          |> Image.put_server_ip()
 
         Ecto.Multi.insert(acc, {:image, ref}, chset)
       end)

@@ -3,6 +3,7 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
 
   alias Hexa.ImageLibrary
   alias HexaWeb.ProfileLive.ImageEntryComponent
+  alias HexaWeb.Endpoint
 
   @max_entries 10
 
@@ -36,29 +37,25 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
     {:noreply, apply_params(socket, params, :validate)}
   end
 
-  def handle_event("save", %{"images" => params}, socket) do
-    IO.puts "SAAAVE!!!!!!!!!!"
+  def handle_event("save", %{"songs" => params}, socket) do
     socket = apply_params(socket, params, :insert) 
     %{current_user: current_user} = socket.assigns
     changesets = socket.assigns.changesets
 
-    if pending_stats?(socket) do
-      {:noreply, socket}
-    else
-      case ImageLibrary.import_images(current_user, changesets, &consume_entry(socket, &1, &2)) do
-        {:ok, songs} ->
-          {:noreply,
-           socket
-           |> put_flash(:info, "#{map_size(songs)} images(s) uploaded")
-           |> push_patch(to: profile_path(current_user))}
+    
+    case ImageLibrary.import_images(current_user, changesets, &consume_entry(socket, &1, &2)) do
+      {:ok, images} ->
+        {:noreply,
+          socket
+          |> put_flash(:info, "#{map_size(images)} images(s) uploaded")
+          |> push_patch(to: Routes.hexa_path(Endpoint, :index, current_user))}
 
-        {:error, {failed_op, reason}} ->
-          {:noreply, put_error(socket, {failed_op, reason})}
-      end
+      {:error, {failed_op, reason}} ->
+        {:noreply, put_error(socket, {failed_op, reason})}
     end
   end
 
-  def handle_event("save", %{} = _params, socket) do
+  def handle_event("save", %{} = params, socket) do
     {:noreply, socket}
   end
 
@@ -73,11 +70,11 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   end
 
   defp apply_params(socket, params, action) when action in [:validate, :insert] do
-    Enum.reduce(params, socket, fn {ref, song_params}, acc ->
+    Enum.reduce(params, socket, fn {ref, image_params}, acc ->
       new_changeset =
         acc
         |> get_changeset(ref)
-        |> ImageLibrary.change_image(song_params)
+        |> ImageLibrary.change_image(image_params)
         |> Map.put(:action, action)
 
       update_changeset(acc, new_changeset, ref)
