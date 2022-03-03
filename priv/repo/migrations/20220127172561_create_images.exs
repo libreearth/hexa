@@ -1,4 +1,4 @@
-defmodule Hexa.Repo.Migrations.CreateSongs do
+defmodule Hexa.Repo.Migrations.CreateImages do
   use Ecto.Migration
 
   def change do

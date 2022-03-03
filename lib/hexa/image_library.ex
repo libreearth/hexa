@@ -8,6 +8,7 @@ defmodule Hexa.ImageLibrary do
 
   alias Hexa.ImageLibrary.Image
   alias Hexa.Accounts
+  alias Hexa.Repo
 
 
   def change_image(image_or_changeset, attrs \\ %{})
@@ -60,6 +61,11 @@ defmodule Hexa.ImageLibrary do
 
         {:error, {failed_op, failed_val}}
     end
+  end
+
+  def list_images(user_id) do
+    query = from( i in Image, where: i.user_id == ^user_id, order_by: [asc: :title])
+    Repo.replica().all(query)
   end
 
   def store_image(%Image{} = image, tmp_path) do

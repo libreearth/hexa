@@ -30,6 +30,12 @@ defmodule HexaWeb.FileController do
     end
   end
 
+  def show(conn, %{"id" => filename_uuid}) do
+    path = MediaLibrary.local_filepath(filename_uuid)
+    mime_type = MIME.from_path(path)
+    do_send_file(conn, path)
+  end
+
   defp do_send_file(conn, path) do
     # accept-ranges headers required for chrome to seek via currentTime
     conn

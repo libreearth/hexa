@@ -7,6 +7,7 @@ defmodule HexaWeb.HexaLive do
   alias HexaWeb.Endpoint
   alias HexaWeb.LayoutComponent
   alias HexaWeb.HexaLive.ImageUploadFormComponent
+  alias HexaWeb.ProfileLive.ImageRowComponent
 
   def render(assigns) do
     ~H"""
@@ -22,7 +23,22 @@ defmodule HexaWeb.HexaLive do
     </.title_bar>
 
     <div class="max-w-3xl px-4 mx-auto mt-6">
-      Here goes a list of hexas
+    <.live_table
+      id="images"
+      module={ImageRowComponent}
+      rows={@images}
+      row_id={fn image -> "image-#{image.id}" end}
+      owns_profile?={@owns_profile?}
+    >
+      <:col let={%{image: image}} label="Title"><%= image.title %></:col>
+      <:col let={%{image: image}} label="URL"><.link to_out={image.image_url} target="_blank" class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium"><.icon name={:eye} class="-ml-0.5 mr-2 h-4 w-4"/>Watch</.link></:col>
+      <:col let={%{image: image}} label="" if={@owns_profile?}>
+        <.link phx-click={show_modal("delete-modal-#{image.id}")} class="inline-flex items-center px-3 py-2 text-sm leading-4 font-medium">
+          <.icon name={:trash} class="-ml-0.5 mr-2 h-4 w-4"/>
+          Delete
+        </.link>
+      </:col>
+    </.live_table>
     </div>
     """
   end
@@ -37,7 +53,8 @@ defmodule HexaWeb.HexaLive do
       assign(
         socket, 
         owns_profile?: MediaLibrary.owns_profile?(current_user, profile),
-        current_user: current_user
+        current_user: current_user,
+        images: ImageLibrary.list_images(current_user.id)
       )
     }
   end

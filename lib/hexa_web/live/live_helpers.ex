@@ -148,6 +148,16 @@ defmodule HexaWeb.LiveHelpers do
     """
   end
 
+  def link(%{to_out: _to} = assigns) do
+    assigns = assign_new(assigns, :class, fn -> nil end)
+
+    ~H"""
+    <a href={@to_out} class={@class} target="_blank">
+      <%= render_slot(@inner_block) %>
+    </a>
+    """
+  end
+
   def link(%{patch: to} = assigns) do
     opts = assigns |> assigns_to_attributes() |> Keyword.put(:to, to)
     assigns = assign(assigns, :opts, opts)
