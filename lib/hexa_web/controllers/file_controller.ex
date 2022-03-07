@@ -32,7 +32,7 @@ defmodule HexaWeb.FileController do
 
   def show(conn, %{"id" => filename_uuid}) do
     path = MediaLibrary.local_filepath(filename_uuid)
-    mime_type = MIME.from_path(path)
+    _mime_type = MIME.from_path(path)
     do_send_file(conn, path)
   end
 

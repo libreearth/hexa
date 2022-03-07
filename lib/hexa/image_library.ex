@@ -17,7 +17,7 @@ defmodule Hexa.ImageLibrary do
     Image.changeset(image, attrs)
   end
 
-  @keep_changes [:image_filesize, :image_filepath]
+  @keep_changes [:image_filesize, :image_filepath, :location]
   def change_image(%Ecto.Changeset{} = prev_changeset, attrs) do
     %Image{}
     |> change_image(attrs)

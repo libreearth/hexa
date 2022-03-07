@@ -2,14 +2,17 @@ defmodule Hexa.ImageLibrary.Image do
   use Ecto.Schema
   import Ecto.Changeset
 
-  alias Hexa.ImageLibrary.Image
+  @h3_level 15
+
   alias Hexa.Accounts
+  alias Hexa.H3Utils
 
   schema "images" do
     field :title, :string
     field :image_url, :string
     field :image_filepath, :string
     field :image_filename, :string
+    field :location, H3.PostGIS.H3Index
     belongs_to :user, Accounts.User
 
     timestamps()
@@ -30,6 +33,9 @@ defmodule Hexa.ImageLibrary.Image do
     put_assoc(changeset, :user, user)
   end
 
+  def put_gps_data(%Ecto.Changeset{} = changeset, %Exexif.Data.Gps{} = gps_data) do
+    Ecto.Changeset.put_change(changeset, :location, H3Utils.exif_to_h3(gps_data, @h3_level))
+  end
   
   def put_image_path(%Ecto.Changeset{} = changeset) do
     if changeset.valid? do

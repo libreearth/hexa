@@ -2,12 +2,20 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   use HexaWeb, :live_component
 
   alias Hexa.ImageLibrary
+  alias Hexa.ImageLibrary.Image
   alias HexaWeb.ProfileLive.ImageEntryComponent
   alias HexaWeb.Endpoint
 
   @max_entries 10
 
   @impl true
+  def update(%{action: {:location, entry_ref, gps_data}}, socket) do
+    case gps_data do
+      nil -> {:ok, cancel_changeset_upload(socket, entry_ref, :not_accepted)}
+      %Exexif.Data.Gps{} = gps_data -> {:ok, put_gps_data(socket, entry_ref, gps_data)}
+    end
+  end
+
   def update(%{image: image} = assigns, socket) do
     {:ok,
      socket
@@ -48,19 +56,15 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
         {:noreply,
           socket
           |> put_flash(:info, "#{map_size(images)} images(s) uploaded")
-          |> push_patch(to: Routes.hexa_path(Endpoint, :index, current_user))}
+          |> push_patch(to: Routes.hexa_path(Endpoint, :index, current_user.username))}
 
       {:error, {failed_op, reason}} ->
         {:noreply, put_error(socket, {failed_op, reason})}
     end
   end
 
-  def handle_event("save", %{} = params, socket) do
+  def handle_event("save", %{} = _params, socket) do
     {:noreply, socket}
-  end
-
-  defp pending_stats?(socket) do
-    Enum.find(socket.assigns.changesets, fn {_ref, chset} -> !chset.changes[:duration] end)
   end
 
   defp consume_entry(socket, ref, store_func) when is_function(store_func) do
@@ -105,7 +109,7 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   end
 
   defp update_changeset(socket, %Ecto.Changeset{} = changeset, entry_ref) do
-    update(socket, :changesets, &Map.put(&1, entry_ref, changeset))
+    update(socket, :changesets, &Map.put(&1, entry_ref, changeset)) 
   end
 
   defp drop_changeset(socket, entry_ref) do
@@ -115,7 +119,42 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   defp handle_progress(:image, entry, socket) do
     ImageEntryComponent.send_progress(entry)
 
+    if entry.done? do
+      async_calculate_duration(socket, entry)
+    end
+
     {:noreply, put_new_changeset(socket, entry)}
+  end
+
+  defp async_calculate_duration(socket, %Phoenix.LiveView.UploadEntry{} = entry) do
+    lv = self()
+
+    consume_uploaded_entry(socket, entry, fn %{path: path} ->
+      Task.Supervisor.start_child(Hexa.TaskSupervisor, fn ->
+        send_update(lv, __MODULE__,
+          id: socket.assigns.id,
+          action: {:location, entry.ref, gps(path)}
+        )
+      end)
+
+      {:postpone, :ok}
+    end)
+  end
+
+  defp gps(file) do
+    case Exexif.exif_from_jpeg_file(file) do
+      {:ok, exif} -> Map.get(exif, :gps) 
+      _ -> nil
+    end
+  end
+
+  defp put_gps_data(socket, entry_ref, gps_data) do
+    if changeset = get_changeset(socket, entry_ref) do
+      new_changeset = Image.put_gps_data(changeset, gps_data)
+      update_changeset(socket, new_changeset, entry_ref)
+    else
+      socket
+    end
   end
 
   defp file_error(%{kind: :dropped} = assigns),

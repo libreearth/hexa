@@ -54,7 +54,10 @@ defmodule Hexa.MixProject do
       {:heroicons, "~> 0.2.2"},
       {:castore, "~> 0.1.13"},
       {:tailwind, "~> 0.1"},
-      {:libcluster, "~> 3.3.1"}
+      {:libcluster, "~> 3.3.1"},
+      {:exexif, "~> 0.0.5"},
+      {:geo_postgis, "~> 3.3"},
+      {:h3, "~> 3.6"}
     ]
   end
 
