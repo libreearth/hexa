@@ -2,7 +2,7 @@ defmodule Hexa.ImageLibrary.Image do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @h3_level 15
+  @h3_level 14
 
   alias Hexa.Accounts
   alias Hexa.H3Utils
@@ -16,6 +16,10 @@ defmodule Hexa.ImageLibrary.Image do
     belongs_to :user, Accounts.User
 
     timestamps()
+  end
+
+  def data_level() do
+    @h3_level
   end
 
   @doc false

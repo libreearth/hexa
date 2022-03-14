@@ -57,7 +57,8 @@ defmodule Hexa.MixProject do
       {:libcluster, "~> 3.3.1"},
       {:exexif, "~> 0.0.5"},
       {:geo_postgis, "~> 3.3"},
-      {:h3, "~> 3.6"}
+      {:h3, "~> 3.6"},
+      {:math, "~> 0.6.0"}
     ]
   end
 

@@ -5,7 +5,7 @@ defmodule Hexa.H3Utils do
   end
 
   def exif_to_h3(%Exexif.Data.Gps{gps_latitude: [lat_g, lat_m, lat_s], gps_latitude_ref: lat_r, gps_longitude: [lon_g, lon_m, lon_s], gps_longitude_ref: lon_r}, level) do
-    :h3.from_geo({to_grads(lon_r, lon_g, lon_m, lon_s), to_grads(lat_r, lat_g, lat_m, lat_s)}, level) |> Integer.to_string(16)
+    :h3.from_geo({to_grads(lat_r, lat_g, lat_m, lat_s), to_grads(lon_r, lon_g, lon_m, lon_s)}, level) |> Integer.to_string(16)
   end
 
   def exif_to_h3(_gps, _level) do

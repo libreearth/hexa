@@ -1,7 +1,6 @@
 import maplibregl from "maplibre-gl"
-import h3j_h3t_init from "../vendor/h3j_h3t"
+import addH3Source from "./h3t_protocol"
 
-h3j_h3t_init(maplibregl)
 
 maphook = {
   mounted(){
@@ -9,25 +8,17 @@ maphook = {
     map = new maplibregl.Map({
       "container": 'map',
       "style": 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-      "center": [-3.703622869000082,40.41711423898472],
+      "center": [-5.9689314894430465, 37.3281967598058],
       "zoom": 16,
-      "minZoom": 14,
+      "minZoom": 0,
       "maxZoom": 21,
       "antialias": true
     })
 
+
     map.on("load", () => {
-      map.addH3TSource(
-        'test-source', 
-        {
-          "sourcelayer": 'test-layer',
-          "tiles": ['h3tiles://cryptic-temple-41553.herokuapp.com/{z}/{x}/{y}.h3t'],
-          "minzoom": 14,
-          "maxzoom": 14,
-          "debug": true, 
-          "attribution": "© <a href='https://www.inspide.com/'>Inspide</a>"
-        }
-      )
+
+      addH3Source(map, 'test-source', 'test-layer', 5, 24)
     
       map.addLayer({
         "id": 'test-layer',

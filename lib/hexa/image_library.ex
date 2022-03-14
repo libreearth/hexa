@@ -63,6 +63,47 @@ defmodule Hexa.ImageLibrary do
     end
   end
 
+  def list_h3_tile(x,y,z, z_h3) do
+    {lat_up, lon_up} = get_lat_lng_for_number(x,y,z)
+    {lat_dw, lon_dw} = get_lat_lng_for_number(x+1, y+1, z)
+    wkt = to_wkt(lat_up, lon_up, lat_dw, lon_dw)
+    h3_query(wkt, z_h3, abs(lon_up-lon_dw)/4)
+    |> Map.get(:rows)
+  end
+
+  defp h3_query(wkt, z_h3, buffer) do
+    query = 
+      if z_h3 <= Image.data_level()  do
+        """
+          select im as location, image_url from h3_polyfill(st_buffer(st_GeometryFromText('#{wkt}'),#{buffer}),#{z_h3}) as im 
+          left join images on images.location in (select h3_to_children(im, #{Image.data_level()}))
+        """
+      else
+        """
+        select im as location, image_url from h3_polyfill(st_buffer(st_GeometryFromText('#{wkt}'),#{buffer}),#{z_h3}) as im 
+        left join images on images.location in (select h3_to_parent(im, #{Image.data_level()}))
+        """
+      end
+    {:ok, result} = Ecto.Adapters.SQL.query(Repo.replica(), query)
+    result
+  end
+
+  def get_lat_lng_for_number(xtile, ytile, zoom) do
+    n = 2.0 ** zoom
+    lon_deg = xtile / n * 360.0 - 180.0
+    lat_rad = Math.atan(Math.sinh(Math.pi * (1 - 2 * ytile / n)))
+    lat_deg = 180.0 * (lat_rad / Math.pi)
+    {lat_deg, lon_deg}
+  end
+
+  def to_wkt(lat_up, lon_up, lat_dw, lon_dw) do
+    "POLYGON((#{lon_up} #{lat_up}, #{lon_dw} #{lat_up}, #{lon_dw} #{lat_dw}, #{lon_up} #{lat_dw}, #{lon_up} #{lat_up}))"
+  end
+
+  def list_images() do
+    Repo.replica().all(from i in Image)
+  end
+
   def list_images(user_id) do
     query = from( i in Image, where: i.user_id == ^user_id, order_by: [asc: :title])
     Repo.replica().all(query)

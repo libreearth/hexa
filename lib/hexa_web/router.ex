@@ -17,6 +17,12 @@ defmodule HexaWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/api", HexaWeb do
+    pipe_through :api
+
+    resources "/tiles/hexas/h3t/:z/:x/:y", H3tMapController, only: [:index]
+  end
+
   scope "/", HexaWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
