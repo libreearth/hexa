@@ -106,7 +106,7 @@ defmodule Hexa.ImageLibrary do
   end
 
   def get_lat_lng_for_number(xtile, ytile, zoom) do
-    n = 2.0 ** zoom
+    n = Math.pow(2.0, zoom)
     lon_deg = xtile / n * 360.0 - 180.0
     lat_rad = Math.atan(Math.sinh(Math.pi * (1 - 2 * ytile / n)))
     lat_deg = 180.0 * (lat_rad / Math.pi)
@@ -139,5 +139,4 @@ defmodule Hexa.ImageLibrary do
   def parse_file_name(name) do
     %{title: Path.rootname(name)}
   end
-
 end

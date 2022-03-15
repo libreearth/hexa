@@ -17,7 +17,13 @@ maphook = {
 
     map.on("click", (e) => {
       var features = map.queryRenderedFeatures(e.point);
-      console.log(features)
+      if (features){
+        var properties = 
+          features.filter((feature) => feature.sourceLayer == "h3-layer")
+          .map((feature) => feature.properties)
+          .filter((property) => property.has_image)
+        this.pushEvent("map-clicked", properties)
+      }
     })
 
 
