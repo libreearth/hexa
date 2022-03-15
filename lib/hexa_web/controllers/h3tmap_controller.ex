@@ -48,15 +48,15 @@ defmodule HexaWeb.H3tMapController do
   end
 
   defp to_h3t([h3, image_url]) do
-    %{id: String.to_integer(h3, 16), h3id: h3, value: value(image_url) }
+    %{ id: String.to_integer(h3, 16), h3id: h3, has_image: has_image(image_url), image_url: image_url }
   end
 
-  defp value(nil) do
+  defp has_image(nil) do
+    0
+  end
+
+  defp has_image(_image_url) do
     1
-  end
-
-  defp value(_image_url) do
-    5
   end
 
 

@@ -10,7 +10,6 @@ addH3Source = function(map, source_name, layer_name,  minzoom, maxzoom){
       splitted_url = params.url.split(/\/|\./i)
       l = splitted_url.length
       let tileIndex = splitted_url.slice(l - 3, l - 0).map(k => k * 1)
-      console.log(tileIndex)
       fetch(`http://${params.url.split("://")[1]}`).then(response => {
           if (response.status == 200) {
             return response.json()

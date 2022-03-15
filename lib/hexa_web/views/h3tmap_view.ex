@@ -8,7 +8,8 @@ defmodule HexaWeb.H3tMapView do
   def render("h3t.json", %{h3t_map: h3t}) do
     %{
       h3id: h3t.h3id,
-      value: h3t.value,
+      has_image: h3t.has_image,
+      image_url: h3t.image_url,
       id: h3t.id
     }
   end

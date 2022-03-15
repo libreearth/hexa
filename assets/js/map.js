@@ -15,30 +15,31 @@ maphook = {
       "antialias": true
     })
 
+    map.on("click", (e) => {
+      var features = map.queryRenderedFeatures(e.point);
+      console.log(features)
+    })
+
 
     map.on("load", () => {
 
-      addH3Source(map, 'test-source', 'test-layer', 5, 24)
+      addH3Source(map, 'h3-source', 'h3-layer', 5, 24)
     
       map.addLayer({
-        "id": 'test-layer',
+        "id": 'h3-layer',
         "type": 'fill',
-        "source": 'test-source',
-        "source-layer": 'test-layer',
+        "source": 'h3-source',
+        "source-layer": 'h3-layer',
         "paint": {
           "fill-color": {
-            "property": 'value',
+            "property": 'has_image',
             "stops": [
-              [1,"#fdc7b7"],
-              [2,"#fe9699"],
-              [3,"#f16580"],
-              [4,"#d9316c"],
-              [5,"#a71f65"],
-              [6,"#760e5d"],
-              [7,"#430254"]
+              [0,"rgba(0, 0, 0, 0)"],
+              [1,"#a71f65"]
             ]
             },
           "fill-opacity": 0.25,
+          "fill-outline-color": "#000000"
         }
       })
     })

@@ -80,8 +80,25 @@ defmodule Hexa.ImageLibrary do
         """
       else
         """
-        select im as location, image_url from h3_polyfill(st_buffer(st_GeometryFromText('#{wkt}'),#{buffer}),#{z_h3}) as im 
-        left join images on images.location in (select h3_to_parent(im, #{Image.data_level()}))
+          select im as location, image_url from h3_polyfill(st_buffer(st_GeometryFromText('#{wkt}'),#{buffer}),#{z_h3}) as im 
+          left join images on images.location in (select h3_to_parent(im, #{Image.data_level()}))
+        """
+      end
+    {:ok, result} = Ecto.Adapters.SQL.query(Repo.replica(), query)
+    result
+  end
+
+  defp h3_query_inner(wkt, z_h3, buffer) do
+    query = 
+      if z_h3 <= Image.data_level()  do
+        """
+          select im as location, image_url from h3_polyfill(st_buffer(st_GeometryFromText('#{wkt}'),#{buffer}),#{z_h3}) as im 
+          inner join images on images.location in (select h3_to_children(im, #{Image.data_level()}))
+        """
+      else
+        """
+          select im as location, image_url from h3_polyfill(st_buffer(st_GeometryFromText('#{wkt}'),#{buffer}),#{z_h3}) as im 
+          inner join images on images.location in (select h3_to_parent(im, #{Image.data_level()}))
         """
       end
     {:ok, result} = Ecto.Adapters.SQL.query(Repo.replica(), query)
