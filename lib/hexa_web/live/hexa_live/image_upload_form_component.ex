@@ -25,7 +25,7 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
        image_id: image.id,
        auto_upload: true,
        progress: &handle_progress/3,
-       accept: ~w(.jpg),
+       accept: ~w(.jpg .jpeg),
        max_entries: @max_entries,
        chunk_size: 64_000 * 3
      )}
