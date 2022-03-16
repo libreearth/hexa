@@ -3,14 +3,20 @@ import {h3ToGeoBoundary} from "h3-js"
 import geojsonvt from "geojson-vt"
 import vtpbf from "vt-pbf"
 
-addH3Source = function(map, source_name, layer_name,  minzoom, maxzoom){
+addH3Source = function(map, source_name, layer_name,  minzoom, maxzoom, tile_call, uses_https){
     const lname =  layer_name
     const mz = maxzoom
+    const https = uses_https
     h3Protocol = (params, callback) => {
-      splitted_url = params.url.split(/\/|\./i)
-      l = splitted_url.length
+      let splitted_url = params.url.split(/\/|\./i)
+      let l = splitted_url.length
       let tileIndex = splitted_url.slice(l - 3, l - 0).map(k => k * 1)
-      fetch(`http://${params.url.split("://")[1]}`).then(response => {
+      let url = null
+      if (https)  
+        url = `https://${params.url.split("://")[1]}`
+      else
+        url = `http://${params.url.split("://")[1]}`
+      fetch(url).then(response => {
           if (response.status == 200) {
             return response.json()
           } else {
@@ -49,7 +55,7 @@ addH3Source = function(map, source_name, layer_name,  minzoom, maxzoom){
     {
       "type": 'vector', 
       "format": 'pbf',
-      "tiles": ['h3tiles://localhost:4000/api/tiles/hexas/h3t/{z}/{x}/{y}'],
+      "tiles": [tile_call],
       "minzoom": minzoom,
       "maxzoom": maxzoom,
     }

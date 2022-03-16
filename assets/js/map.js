@@ -1,6 +1,13 @@
 import maplibregl from "maplibre-gl"
 import addH3Source from "./h3t_protocol"
 
+getHostUrl = () => {
+  if (window.host.startsWith("https")) {
+    return [true, window.host.replace("https://", "")]
+  } else {
+    return [false, window.host.replace("http://", "")]
+  }
+}
 
 maphook = {
   mounted(){
@@ -29,7 +36,9 @@ maphook = {
 
     map.on("load", () => {
 
-      addH3Source(map, 'h3-source', 'h3-layer', 5, 24)
+      [https, host_url] = getHostUrl()
+      console.log(host_url)
+      addH3Source(map, 'h3-source', 'h3-layer', 5, 24, `h3tiles://${host_url}/api/tiles/hexas/h3t/{z}/{x}/{y}`, https)
     
       map.addLayer({
         "id": 'h3-layer',

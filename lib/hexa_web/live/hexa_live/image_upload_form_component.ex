@@ -160,17 +160,11 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   defp file_error(%{kind: :dropped} = assigns),
     do: ~H|<%= @label %>: dropped (exceeds limit of 10 files)|
 
-  defp file_error(%{kind: :too_large} = assigns),
-    do: ~H|<%= @label %>: larger than 10MB|
-
   defp file_error(%{kind: :not_accepted} = assigns),
-    do: ~H|<%= @label %>: not a valid MP3 file|
+    do: ~H|<%= @label %>: not a valid JPG file|
 
   defp file_error(%{kind: :too_many_files} = assigns),
     do: ~H|too many files|
-
-  defp file_error(%{kind: :songs_limit_exceeded} = assigns),
-    do: ~H|You exceeded the limit of songs per account|
 
   defp file_error(%{kind: :invalid} = assigns),
     do: ~H|Something went wrong|

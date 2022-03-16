@@ -92,4 +92,9 @@ defmodule Hexa do
         """
     end
   end
+
+  def host_url() do
+    %{scheme: scheme, host: host, port: port} = Enum.into(Hexa.config([:files, :host]), %{})
+    URI.to_string(%URI{scheme: scheme, host: host, port: port})
+  end
 end
