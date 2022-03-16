@@ -10,9 +10,11 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
 
   @impl true
   def update(%{action: {:location, entry_ref, gps_data}}, socket) do
-    case gps_data do
-      nil -> {:ok, cancel_changeset_upload(socket, entry_ref, :not_accepted)}
+    phone_location = Map.get(socket.assigns, :location, nil) 
+    case (gps_data || phone_location)  do
+      %{"lat" => _lat, "lon" => _lon} = location -> {:ok, put_gps_data(socket, entry_ref, location)}
       %Exexif.Data.Gps{} = gps_data -> {:ok, put_gps_data(socket, entry_ref, gps_data)}
+      _ -> {:ok, cancel_changeset_upload(socket, entry_ref, :not_geolocated)}
     end
   end
 
@@ -66,6 +68,11 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   def handle_event("save", %{} = _params, socket) do
     {:noreply, socket}
   end
+
+  def handle_event("location-avaliable", location, socket) do
+    {:noreply, assign(socket, :location, location)}
+  end
+
 
   defp consume_entry(socket, ref, store_func) when is_function(store_func) do
     {entries, []} = uploaded_entries(socket, :image)
@@ -161,7 +168,10 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
     do: ~H|<%= @label %>: dropped (exceeds limit of 10 files)|
 
   defp file_error(%{kind: :not_accepted} = assigns),
-    do: ~H|<%= @label %>: not a valid JPG file|
+    do: ~H|<%= @label %>: not a valid JPG file.|
+
+  defp file_error(%{kind: :not_geolocated} = assigns),
+    do: ~H|<%= @label %>: The image must be geolocated or phone location must be on.|
 
   defp file_error(%{kind: :too_many_files} = assigns),
     do: ~H|too many files|

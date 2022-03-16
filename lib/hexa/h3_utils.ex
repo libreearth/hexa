@@ -1,5 +1,13 @@
 defmodule Hexa.H3Utils do
 
+  def latlon_to_h3(%{"lat" => nil, "lon" => nil}, _level) do
+    nil
+  end
+
+  def latlon_to_h3(%{"lat" => lat, "lon" => lon}, level) do
+    :h3.from_geo({lat, lon}, level) |> Integer.to_string(16)
+  end
+
   def exif_to_h3(%Exexif.Data.Gps{gps_latitude: nil, gps_latitude_ref: nil, gps_longitude: nil, gps_longitude_ref: nil}, _level) do
     nil
   end

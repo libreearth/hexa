@@ -40,6 +40,10 @@ defmodule Hexa.ImageLibrary.Image do
   def put_gps_data(%Ecto.Changeset{} = changeset, %Exexif.Data.Gps{} = gps_data) do
     Ecto.Changeset.put_change(changeset, :location, H3Utils.exif_to_h3(gps_data, @h3_level))
   end
+
+  def put_gps_data(%Ecto.Changeset{} = changeset, %{"lat" => lat, "lon" => lon} = gps_data) do
+    Ecto.Changeset.put_change(changeset, :location, H3Utils.latlon_to_h3(gps_data, @h3_level))
+  end
   
   def put_image_path(%Ecto.Changeset{} = changeset) do
     if changeset.valid? do
