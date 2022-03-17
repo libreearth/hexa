@@ -22,6 +22,19 @@ defmodule HexaWeb.HexaLive do
       </:actions>
     </.title_bar>
 
+    <div id="dialogs" phx-update="append">
+      <%= for image <- if(@owns_profile?, do: @images, else: []), id = "delete-modal-#{image.id}" do %>
+        <.modal
+          id={id}
+          on_confirm={JS.push("delete", value: %{id: image.id}) |> hide_modal(id) |> hide("#image-#{image.id}")}
+        >
+          Are you sure you want to delete "<%= image.title %>"?
+          <:cancel>Cancel</:cancel>
+          <:confirm>Delete</:confirm>
+        </.modal>
+      <% end %>
+    </div>
+
     <div class="px-4 mx-auto mt-6">
     <.live_phone_table
       id="images"
@@ -80,6 +93,16 @@ defmodule HexaWeb.HexaLive do
   defp apply_action(socket, :index, _params) do
     socket
     |> assign(:page_title, "Listing Hexas")
+  end
+
+  def handle_event("delete", %{"id" => image_id}, socket) do
+    image = ImageLibrary.get_image!(image_id)
+
+    if image.user_id == socket.assigns.current_user.id do
+      :ok = ImageLibrary.delete_image(image)
+    end
+
+    {:noreply, assign(socket, :images, ImageLibrary.list_images(socket.assigns.current_user.id))}
   end
 
   defp show_upload_modal(socket) do

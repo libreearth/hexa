@@ -148,4 +148,30 @@ defmodule Hexa.ImageLibrary do
   def parse_file_name(name) do
     %{title: Path.rootname(name)}
   end
+
+  def get_image!(id), do: Repo.replica().get!(Image, id)
+
+  def delete_image(%Image{} = image) do
+    delete_image_file(image)
+
+    Ecto.Multi.new()
+    |> Ecto.Multi.delete(:delete, image)
+    |> Repo.transaction()
+    |> case do
+      {:ok, _} -> :ok
+      other -> other
+    end
+  end
+
+  defp delete_image_file(image) do
+    case File.rm(image.image_filepath) do
+      :ok ->
+        :ok
+
+      {:error, reason} ->
+        Logger.info(
+          "unable to delete song #{image.id} at #{image.image_filepath}, got: #{inspect(reason)}"
+        )
+    end
+  end
 end
