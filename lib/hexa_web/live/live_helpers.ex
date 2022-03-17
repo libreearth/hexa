@@ -593,6 +593,47 @@ defmodule HexaWeb.LiveHelpers do
     """
   end
 
+  def live_phone_table(assigns) do
+    assigns =
+      assigns
+      |> assign_new(:row_id, fn -> false end)
+      |> assign_new(:active_id, fn -> nil end)
+      |> assign_new(:owns_profile?, fn -> assigns.owns_profile? end)
+      |> assign(:col, for(col <- assigns.col, col[:if] != false, do: col))
+
+    ~H"""
+    <div>
+      <div class="align-middle inline-block min-w-full border-b border-gray-200">
+        <table class="min-w-full">
+          <thead>
+            <tr class="border-t border-gray-200">
+              <%= for col <- @col do %>
+                <th
+                  class="px-6 py-3 border-b border-gray-200 bg-gray-50 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <span class="lg:pl-2"><%= col.label %></span>
+                </th>
+              <% end %>
+            </tr>
+          </thead>
+          <tbody id={@id} class="bg-white divide-y divide-gray-100" phx-update="append">
+            <%= for {row, i} <- Enum.with_index(@rows) do %>
+              <.live_component
+                module={@module}
+                id={@row_id.(row)}
+                row={row} col={@col}
+                index={i}
+                active_id={@active_id}
+                class="hover:bg-gray-50",
+                owns_profile?={@owns_profile?}
+              />
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    """
+  end
+
   @doc """
   Calls a wired up event listener to call a function with arguments.
 

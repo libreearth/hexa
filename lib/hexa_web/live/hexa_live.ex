@@ -22,8 +22,8 @@ defmodule HexaWeb.HexaLive do
       </:actions>
     </.title_bar>
 
-    <div class="max-w-3xl px-4 mx-auto mt-6">
-    <.live_table
+    <div class="px-4 mx-auto mt-6">
+    <.live_phone_table
       id="images"
       module={ImageRowComponent}
       rows={@images}
@@ -38,7 +38,7 @@ defmodule HexaWeb.HexaLive do
           Delete
         </.link>
       </:col>
-    </.live_table>
+    </.live_phone_table>
     </div>
     """
   end
