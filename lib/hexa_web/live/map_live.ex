@@ -50,6 +50,13 @@ defmodule HexaWeb.MapLive do
     }
   end
 
+  def handle_event("user-location", %{"lon" => _lon, "lat" => _lat}, socket) do
+    {
+      :noreply,
+      socket
+    }
+  end
+
   def handle_event("hide-modal", %{}, socket) do
     {
       :noreply, 

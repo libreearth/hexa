@@ -10,17 +10,37 @@ getHostUrl = () => {
 }
 
 maphook = {
+  userLocation: null,
   mounted(){
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => this.initMap([position.coords.longitude, position.coords.latitude]),
+        (error) => this.initMap([-5.9689314894430465, 37.3281967598058])
+      )
+    } else {
+      this.initMap([-5.9689314894430465, 37.3281967598058])
+    }
+  },
+  initMap(current_location){
     
     map = new maplibregl.Map({
       "container": 'map',
       "style": 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-      "center": [-5.9689314894430465, 37.3281967598058],
+      "center": current_location,
       "zoom": 16,
       "minZoom": 0,
       "maxZoom": 21,
       "antialias": true
     })
+
+    map.addControl(
+      new maplibregl.GeolocateControl({
+        positionOptions: {
+          enableHighAccuracy: true
+        },
+        trackUserLocation: true
+      })
+    );
 
     map.on("click", (e) => {
       var features = map.queryRenderedFeatures(e.point);
@@ -58,6 +78,16 @@ maphook = {
         }
       })
     })
+
+    this.setupLocationWatch()
+  },
+  setupLocationWatch() {
+    if (navigator.geolocation) {
+      navigator.geolocation.watchPosition((position) => {
+        this.userLocation = {lat: position.coords.latitude, lon: position.coords.longitude}
+        this.pushEvent("user-location", this.userLocation)
+      });
+    } 
   }
 }
 
