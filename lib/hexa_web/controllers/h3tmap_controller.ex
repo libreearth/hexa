@@ -4,7 +4,12 @@ defmodule HexaWeb.H3tMapController do
   alias Hexa.ImageLibrary
 
   @zooms %{
-    "5" => 3,
+    "0" => 0,
+    "1" => 1,
+    "2" => 2,
+    "3" => 2,
+    "4" => 3,
+    "5" => 4,
     "6" => 4,
     "7" => 5,
     "8" => 5,
