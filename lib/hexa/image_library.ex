@@ -67,8 +67,17 @@ defmodule Hexa.ImageLibrary do
     {lat_up, lon_up} = get_lat_lng_for_number(x,y,z)
     {lat_dw, lon_dw} = get_lat_lng_for_number(x+1, y+1, z)
     wkt = to_wkt(lat_up, lon_up, lat_dw, lon_dw)
-    h3_query(wkt, z_h3, abs(lon_up-lon_dw)/4)
+    h3_single_query(wkt, z_h3, abs(lon_up-lon_dw)/4)
     |> Map.get(:rows)
+  end
+
+  defp h3_single_query(wkt, z_h3, buffer) do
+    query = 
+        """
+          select h3_to_parent(location, #{z_h3}) as location, image_url from images where h3_to_parent(location, #{z_h3}) in (select h3_polyfill(st_buffer(st_GeometryFromText('#{wkt}'),#{buffer}),#{z_h3}))
+        """
+    {:ok, result} = Ecto.Adapters.SQL.query(Repo.replica(), query)
+    result
   end
 
   defp h3_query(wkt, z_h3, buffer) do

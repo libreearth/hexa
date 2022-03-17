@@ -2,7 +2,7 @@ defmodule Hexa.ImageLibrary.Image do
   use Ecto.Schema
   import Ecto.Changeset
 
-  @h3_level 14
+  @h3_level 15
 
   alias Hexa.Accounts
   alias Hexa.H3Utils
@@ -41,7 +41,7 @@ defmodule Hexa.ImageLibrary.Image do
     Ecto.Changeset.put_change(changeset, :location, H3Utils.exif_to_h3(gps_data, @h3_level))
   end
 
-  def put_gps_data(%Ecto.Changeset{} = changeset, %{"lat" => lat, "lon" => lon} = gps_data) do
+  def put_gps_data(%Ecto.Changeset{} = changeset, %{"lat" => _lat, "lon" => _lon} = gps_data) do
     Ecto.Changeset.put_change(changeset, :location, H3Utils.latlon_to_h3(gps_data, @h3_level))
   end
   
