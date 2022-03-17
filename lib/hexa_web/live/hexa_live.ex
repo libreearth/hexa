@@ -3,7 +3,6 @@ defmodule HexaWeb.HexaLive do
 
   alias Hexa.{MediaLibrary, ImageLibrary, Accounts}
   
-  #alias HexaWeb.MapComponent
   alias HexaWeb.Endpoint
   alias HexaWeb.LayoutComponent
   alias HexaWeb.HexaLive.ImageUploadFormComponent
@@ -74,7 +73,7 @@ defmodule HexaWeb.HexaLive do
 
   def handle_params(params, _url, socket) do
     LayoutComponent.hide_modal()
-    {:noreply, socket |> apply_action(socket.assigns.live_action, params)}
+    {:noreply, socket |> assign(:images, ImageLibrary.list_images(socket.assigns.current_user.id)) |> apply_action(socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :new, _params) do
