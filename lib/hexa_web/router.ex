@@ -57,6 +57,7 @@ defmodule HexaWeb.Router do
     live_session :default, on_mount: [{HexaWeb.UserAuth, :current_user}, HexaWeb.Nav] do
       live "/signin", SignInLive, :index
       live "/map", MapLive, :index
+      live "/ar", ArLive, :index
     end
 
     live_session :authenticated,

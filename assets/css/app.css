@@ -138,3 +138,11 @@
 #map canvas {
   cursor: pointer
 }
+
+#ar-frame {
+  position: absolute;
+  top: 64px;
+  right: 0;
+  width: 100%;
+  height: calc(100% - 64px);
+}

@@ -4,6 +4,7 @@ import {LiveSocket} from "phoenix_live_view"
 import topbar from "../vendor/topbar"
 import maphook from "./map"
 import locationhook from "./location"
+import arhook from "./ar"
 
 let nowSeconds = () => Math.round(Date.now() / 1000)
 let rand = (min, max) => Math.floor(Math.random() * (max - min) + min)
@@ -16,6 +17,7 @@ let Hooks = {}
 
 Hooks.Map = maphook
 Hooks.Location = locationhook
+Hooks.Ar = arhook
 
 Hooks.Flash = {
   mounted(){
