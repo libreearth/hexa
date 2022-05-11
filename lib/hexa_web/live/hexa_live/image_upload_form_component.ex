@@ -10,8 +10,9 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
 
   @impl true
   def update(%{action: {:location, entry_ref, gps_data}}, socket) do
-    phone_location = Map.get(socket.assigns, :location, nil) 
-    case (gps_data || phone_location)  do
+    phone_location = Map.get(socket.assigns, :location, nil)
+    clicked_coord = Map.get(socket.assigns, :clicked_coord, nil)
+    case (gps_data || clicked_coord || phone_location)  do
       %{"lat" => _lat, "lon" => _lon} = location -> {:ok, put_gps_data(socket, entry_ref, location)}
       %Exexif.Data.Gps{} = gps_data -> {:ok, put_gps_data(socket, entry_ref, gps_data)}
       _ -> {:ok, cancel_changeset_upload(socket, entry_ref, :not_geolocated)}
@@ -48,17 +49,17 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   end
 
   def handle_event("save", %{"songs" => params}, socket) do
-    socket = apply_params(socket, params, :insert) 
+    socket = apply_params(socket, params, :insert)
     %{current_user: current_user} = socket.assigns
     changesets = socket.assigns.changesets
 
-    
+
     case ImageLibrary.import_images(current_user, changesets, &consume_entry(socket, &1, &2)) do
       {:ok, images} ->
         {:noreply,
           socket
           |> put_flash(:info, "#{map_size(images)} images(s) uploaded")
-          |> push_patch(to: Routes.hexa_path(Endpoint, :index, current_user.username))}
+          |> push_patch(to: socket.assigns.patch)}#Routes.hexa_path(Endpoint, :index, current_user.username))}
 
       {:error, {failed_op, reason}} ->
         {:noreply, put_error(socket, {failed_op, reason})}
@@ -116,7 +117,7 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   end
 
   defp update_changeset(socket, %Ecto.Changeset{} = changeset, entry_ref) do
-    update(socket, :changesets, &Map.put(&1, entry_ref, changeset)) 
+    update(socket, :changesets, &Map.put(&1, entry_ref, changeset))
   end
 
   defp drop_changeset(socket, entry_ref) do
@@ -150,7 +151,7 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
 
   defp gps(file) do
     case Exexif.exif_from_jpeg_file(file) do
-      {:ok, exif} -> Map.get(exif, :gps) 
+      {:ok, exif} -> Map.get(exif, :gps)
       _ -> nil
     end
   end

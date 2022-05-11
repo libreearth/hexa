@@ -1,7 +1,11 @@
 defmodule HexaWeb.MapLive do
   use HexaWeb, :live_view
-  
+
   alias HexaWeb.MapComponent
+  alias HexaWeb.LayoutComponent
+  alias Hexa.ImageLibrary
+  alias HexaWeb.Endpoint
+  alias HexaWeb.HexaLive.ImageUploadFormComponent
 
   def render(assigns) do
     ~H"""
@@ -10,7 +14,7 @@ defmodule HexaWeb.MapLive do
     </.title_bar>
 
     <div class="max-w-3xl px-4 mx-auto mt-6">
-      <.live_component module={MapComponent} id="map"/> 
+      <.live_component module={MapComponent} id="map"/>
     </div>
     <%= if @show do %>
       <div class={"fixed z-10 inset-0 overflow-y-auto #{if @show, do: "fade-in", else: "hidden"}"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
@@ -28,22 +32,30 @@ defmodule HexaWeb.MapLive do
     <% end %>
     """
   end
-    
+
   def mount(_parmas, _session, socket) do
+    %{current_user: current_user} = socket.assigns
     {
-      :ok, 
+      :ok,
       socket
+      |> assign(:current_user, current_user)
       |> assign(:show, false)
     }
   end
 
-  def handle_event("map-clicked", [], socket) do
-    { :noreply, socket}
+  def handle_params(_params, _url, socket) do
+    LayoutComponent.hide_modal()
+    {:noreply, push_event(socket, "reload-map", %{})}
+  end
+
+
+  def handle_event("map-clicked", %{"lon" => _lon, "lat" => _lat} = coord, socket) do
+    { :noreply, show_upload(socket, coord)}
   end
 
   def handle_event("map-clicked", properties, socket) do
     {
-      :noreply, 
+      :noreply,
       socket
       |> assign(:show, true)
       |> assign(:image_url, properties |> List.first() |> Map.get("image_url"))
@@ -59,9 +71,29 @@ defmodule HexaWeb.MapLive do
 
   def handle_event("hide-modal", %{}, socket) do
     {
-      :noreply, 
+      :noreply,
       socket
       |> assign(:show, false)
     }
+  end
+
+  defp show_upload(socket, coord) do
+      socket
+      |> assign(:image, %ImageLibrary.Image{})
+      |> show_upload_modal(coord)
+  end
+
+  defp show_upload_modal(socket, coord) do
+    LayoutComponent.show_modal(ImageUploadFormComponent, %{
+      id: :new,
+      confirm: {"Save", type: "submit", form: "image-form"},
+      patch: Routes.map_path(Endpoint, :index),
+      image: socket.assigns.image,
+      title: "Upload hexa",
+      current_user: socket.assigns.current_user,
+      clicked_coord: coord
+    })
+
+    socket
   end
 end
