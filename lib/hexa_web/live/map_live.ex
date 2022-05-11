@@ -11,6 +11,16 @@ defmodule HexaWeb.MapLive do
     ~H"""
     <.title_bar>
       Map exploration
+      <:actions>
+        <%= if @selected_mode do %>
+          <.button id="upload-btn" primary phx-click="upload-selected-hexa">
+            <.icon name={:upload}/><span class="ml-2">Upload selected Hexa</span>
+          </.button>
+          <.button id="cancel-upload-btn" primary phx-click="cancel-selection">
+            <.icon name={:x}/><span class="ml-2">Cancel selection</span>
+          </.button>
+        <% end %>
+      </:actions>
     </.title_bar>
 
     <div class="max-w-3xl px-4 mx-auto mt-6">
@@ -40,6 +50,7 @@ defmodule HexaWeb.MapLive do
       socket
       |> assign(:current_user, current_user)
       |> assign(:show, false)
+      |> assign(:selected_mode, false)
     }
   end
 
@@ -48,9 +59,31 @@ defmodule HexaWeb.MapLive do
     {:noreply, push_event(socket, "reload-map", %{})}
   end
 
+  def handle_event("cancel-selection", _we, socket) do
+    {
+      :noreply,
+      socket
+      |> assign(:selected_coord, nil)
+      |> assign(:selected_mode, false)
+      |> push_event("reload-map", %{})
+    }
+  end
+
+  def handle_event("upload-selected-hexa", _we, socket) do
+    {
+      :noreply,
+      show_upload(socket, socket.assigns.selected_coord)
+    }
+  end
+
 
   def handle_event("map-clicked", %{"lon" => _lon, "lat" => _lat} = coord, socket) do
-    { :noreply, show_upload(socket, coord)}
+    {
+      :noreply,
+      socket
+      |> assign(:selected_mode, true)
+      |> assign(:selected_coord, coord)
+    }
   end
 
   def handle_event("map-clicked", properties, socket) do
@@ -80,6 +113,8 @@ defmodule HexaWeb.MapLive do
   defp show_upload(socket, coord) do
       socket
       |> assign(:image, %ImageLibrary.Image{})
+      |> assign(:selected_coord, nil)
+      |> assign(:selected_mode, false)
       |> show_upload_modal(coord)
   end
 

@@ -55,6 +55,7 @@ maphook = {
           .filter((property) => property.has_image)
         if (properties.length == 0){
           this.pushEvent("map-clicked", {"lat": e.lngLat.lat, "lon": e.lngLat.lng})
+          this.setSelectedHexa(geoToH3(e.lngLat.lat, e.lngLat.lng, window.h3_level))
         } else {
           this.pushEvent("map-clicked", properties)
         }
@@ -87,7 +88,7 @@ maphook = {
         }
       })
 
-      //add a geojson layer 
+      //add a geojson layer for the location
       map.addSource('location-hexas', {
         type: 'geojson',
         data: {
@@ -102,14 +103,36 @@ maphook = {
         'source': 'location-hexas',
         'layout': {},
         'paint': {
-          'fill-color': '#00F',
+          'fill-color': 'yellow',
+          'fill-outline-color': 'black',
           'fill-opacity': [
             "interpolate",
             ["linear"],
             ["get", "distance"],
-            0,1,
-            12,0.1
+            0,0.3,
+            12,0
           ]
+        }
+      })
+
+      //add a geojson layer for the selection
+      map.addSource('selection-hexas', {
+        type: 'geojson',
+        data: {
+          "type": "FeatureCollection",
+          "features": []
+        }
+      })
+
+      map.addLayer({
+        'id': 'selection-hexas-layer',
+        'type': 'fill',
+        'source': 'selection-hexas',
+        'layout': {},
+        'paint': {
+          'fill-color': 'red',
+          'fill-outline-color': 'black',
+          'fill-opacity': 1
         }
       })
 
@@ -129,7 +152,7 @@ maphook = {
     } 
   },
   showNearestHexas(position) {
-    data = {
+    var data = {
       "type": "FeatureCollection",
       "features": []
     }
@@ -154,8 +177,26 @@ maphook = {
       }
     }
   },
+  setSelectedHexa(h3Index) {
+    var data = {
+      "type": "FeatureCollection",
+      "features": []
+    }
+
+    feature = this.h3IndexToFeature(h3Index, h3Index)
+    data.features = [feature]
+    this.map.getSource('selection-hexas').setData(data)
+  },
+  clearSelection(){
+    var data = {
+      "type": "FeatureCollection",
+      "features": []
+    }
+    this.map.getSource('selection-hexas').setData(data)
+  },
   reloadMap(){
     if (this.map){
+      this.clearSelection()
       this.map.getSource('h3-source').load()
     }
   }
