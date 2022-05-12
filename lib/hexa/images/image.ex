@@ -27,10 +27,6 @@ defmodule Hexa.ImageLibrary.Image do
     image
     |> cast(attrs, [:title])
     |> validate_required([:title])
-    |> unique_constraint(:title,
-      message: "is a duplicated from another image",
-      name: "images_user_id_title_artist_index"
-    )
   end
 
   def put_user(%Ecto.Changeset{} = changeset, %Accounts.User{} = user) do

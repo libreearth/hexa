@@ -10,21 +10,21 @@ defmodule HexaWeb.MapLive do
   def render(assigns) do
     ~H"""
     <.title_bar>
-      Map exploration
+      Map
       <:actions>
         <%= if @selected_mode do %>
           <.button id="upload-btn" primary phx-click="upload-selected-hexa">
-            <.icon name={:upload}/><span class="ml-2">Upload selected Hexa</span>
+            <.icon name={:upload}/><span class="ml-2">Upload Hexa</span>
           </.button>
           <.button id="cancel-upload-btn" primary phx-click="cancel-selection">
-            <.icon name={:x}/><span class="ml-2">Cancel selection</span>
+            <.icon name={:x}/><span class="ml-2">Cancel</span>
           </.button>
         <% end %>
       </:actions>
     </.title_bar>
 
     <div class="max-w-3xl px-4 mx-auto mt-6">
-      <.live_component module={MapComponent} id="map"/>
+      <.live_component module={MapComponent} id="map" class= {if @selected_mode, do: "move-down-map"}/>
     </div>
     <%= if @show do %>
       <div class={"fixed z-10 inset-0 overflow-y-auto #{if @show, do: "fade-in", else: "hidden"}"} aria-labelledby="modal-title" role="dialog" aria-modal="true">

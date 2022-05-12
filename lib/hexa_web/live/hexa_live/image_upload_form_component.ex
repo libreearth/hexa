@@ -4,17 +4,15 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   alias Hexa.ImageLibrary
   alias Hexa.ImageLibrary.Image
   alias HexaWeb.ProfileLive.ImageEntryComponent
-  alias HexaWeb.Endpoint
 
   @max_entries 10
 
   @impl true
-  def update(%{action: {:location, entry_ref, gps_data}}, socket) do
+  def update(%{action: {:location, entry_ref}}, socket) do
     phone_location = Map.get(socket.assigns, :location, nil)
     clicked_coord = Map.get(socket.assigns, :clicked_coord, nil)
-    case (gps_data || clicked_coord || phone_location)  do
+    case (clicked_coord || phone_location)  do
       %{"lat" => _lat, "lon" => _lon} = location -> {:ok, put_gps_data(socket, entry_ref, location)}
-      %Exexif.Data.Gps{} = gps_data -> {:ok, put_gps_data(socket, entry_ref, gps_data)}
       _ -> {:ok, cancel_changeset_upload(socket, entry_ref, :not_geolocated)}
     end
   end
@@ -44,7 +42,7 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
     {:noreply, drop_invalid_uploads(new_socket)}
   end
 
-  def handle_event("validate", %{"images" => params, "_target" => ["images", _, _]}, socket) do
+  def handle_event("validate", %{"songs" => params, "_target" => ["songs", _, _]}, socket) do
     {:noreply, apply_params(socket, params, :validate)}
   end
 
@@ -141,19 +139,12 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
       Task.Supervisor.start_child(Hexa.TaskSupervisor, fn ->
         send_update(lv, __MODULE__,
           id: socket.assigns.id,
-          action: {:location, entry.ref, gps(path)}
+          action: {:location, entry.ref}
         )
       end)
 
       {:postpone, :ok}
     end)
-  end
-
-  defp gps(file) do
-    case Exexif.exif_from_jpeg_file(file) do
-      {:ok, exif} -> Map.get(exif, :gps)
-      _ -> nil
-    end
   end
 
   defp put_gps_data(socket, entry_ref, gps_data) do

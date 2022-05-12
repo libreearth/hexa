@@ -135,6 +135,16 @@
   height: calc(100% - 64px);
 }
 
+@media (max-width: 600px) {
+  #map {
+    position: absolute;
+    top: 110px;
+    right: 0;
+    width: 100%;
+    height: calc(100% - 110px);
+  }
+}
+
 #map canvas {
   cursor: pointer
 }
