@@ -54,6 +54,7 @@ maphook = {
           .map((feature) => feature.properties)
           .filter((property) => property.has_image)
         if (properties.length == 0){
+          document.querySelector("#map").classList.add("move-map-down")
           this.pushEvent("map-clicked", {"lat": e.lngLat.lat, "lon": e.lngLat.lng})
           this.setSelectedHexa(geoToH3(e.lngLat.lat, e.lngLat.lng, window.h3_level))
         } else {
@@ -188,6 +189,7 @@ maphook = {
     this.map.getSource('selection-hexas').setData(data)
   },
   clearSelection(){
+    document.querySelector("#map").classList.remove("move-map-down")
     var data = {
       "type": "FeatureCollection",
       "features": []

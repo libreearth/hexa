@@ -127,20 +127,17 @@
   cursor: pointer;
 }
 
-#map {
-  position: absolute;
+.down-map {
+  position: absolute !important;
   top: 64px;
   right: 0;
   width: 100%;
   height: calc(100% - 64px);
 }
 
-@media (max-width: 600px) {
-  #map {
-    position: absolute;
+@media (max-width: 640px) {
+  .move-map-down {
     top: 110px;
-    right: 0;
-    width: 100%;
     height: calc(100% - 110px);
   }
 }

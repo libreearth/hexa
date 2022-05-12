@@ -6,6 +6,7 @@ defmodule HexaWeb.MapLive do
   alias Hexa.ImageLibrary
   alias HexaWeb.Endpoint
   alias HexaWeb.HexaLive.ImageUploadFormComponent
+  alias Phoenix.LiveView.JS
 
   def render(assigns) do
     ~H"""
@@ -24,7 +25,7 @@ defmodule HexaWeb.MapLive do
     </.title_bar>
 
     <div class="max-w-3xl px-4 mx-auto mt-6">
-      <.live_component module={MapComponent} id="map" class= {if @selected_mode, do: "move-down-map"}/>
+      <.live_component module={MapComponent} id="map"/>
     </div>
     <%= if @show do %>
       <div class={"fixed z-10 inset-0 overflow-y-auto #{if @show, do: "fade-in", else: "hidden"}"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
