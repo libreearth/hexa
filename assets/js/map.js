@@ -1,6 +1,7 @@
 import maplibregl from "maplibre-gl"
 import addH3Source from "./h3t_protocol"
 import _ from "lodash"
+import FullScreenControl from "./fullscreen_control";
 import {geoToH3, kRing, h3ToGeoBoundary, h3Distance } from "h3-js";
 
 getHostUrl = () => {
@@ -45,6 +46,14 @@ maphook = {
         trackUserLocation: true
       })
     )
+
+    map.addControl(new maplibregl.FullscreenControl({container: document.querySelector("#map-wrapper")}))
+    /*map.on("resize", () => {
+      if (document.fullscreenElement)
+        this.pushEvent("full-screen", {})
+      else
+        this.pushEvent("not-full-screen", {})
+    }) */
 
     map.on("click", (e) => {
       var features = map.queryRenderedFeatures(e.point);

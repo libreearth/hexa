@@ -127,21 +127,6 @@
   cursor: pointer;
 }
 
-.down-map {
-  position: absolute !important;
-  top: 64px;
-  right: 0;
-  width: 100%;
-  height: calc(100% - 64px);
-}
-
-@media (max-width: 640px) {
-  .move-map-down {
-    top: 110px;
-    height: calc(100% - 110px);
-  }
-}
-
 #map canvas {
   cursor: pointer
 }
@@ -152,4 +137,11 @@
   right: 0;
   width: 100%;
   height: calc(100% - 64px);
+}
+
+.inset-center {
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

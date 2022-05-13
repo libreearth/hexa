@@ -2,45 +2,42 @@ defmodule HexaWeb.MapLive do
   use HexaWeb, :live_view
 
   alias HexaWeb.MapComponent
-  alias HexaWeb.LayoutComponent
+  alias HexaWeb.MapLayoutComponent
   alias Hexa.ImageLibrary
   alias HexaWeb.Endpoint
   alias HexaWeb.HexaLive.ImageUploadFormComponent
-  alias Phoenix.LiveView.JS
 
   def render(assigns) do
     ~H"""
-    <.title_bar>
-      Map
-      <:actions>
+      <div id="map-wrapper" class="h-full">
+        <.live_component module={MapComponent} id="map"/>
         <%= if @selected_mode do %>
-          <.button id="upload-btn" primary phx-click="upload-selected-hexa">
-            <.icon name={:upload}/><span class="ml-2">Upload Hexa</span>
-          </.button>
-          <.button id="cancel-upload-btn" primary phx-click="cancel-selection">
-            <.icon name={:x}/><span class="ml-2">Cancel</span>
-          </.button>
-        <% end %>
-      </:actions>
-    </.title_bar>
-
-    <div class="max-w-3xl px-4 mx-auto mt-6">
-      <.live_component module={MapComponent} id="map"/>
-    </div>
-    <%= if @show do %>
-      <div class={"fixed z-10 inset-0 overflow-y-auto #{if @show, do: "fade-in", else: "hidden"}"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-          <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
-          <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-          <div
-            class={"#{if @show, do: "fade-in-scale", else: "hidden"} sticky inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-xl sm:w-full sm:p-6"}
-            phx-click-away="hide-modal"
-          >
-            <img src={@image_url} />
+          <div class="inset-center bg-white p-2 rounded z-10 flex gap-1">
+            <.button id="upload-btn" primary phx-click="upload-selected-hexa">
+              <.icon name={:upload}/><span class="m-2">Upload</span>
+            </.button>
+            <.button id="cancel-upload-btn"  phx-click="cancel-selection">
+              <.icon name={:x}/><span class="m-2">Cancel</span>
+            </.button>
           </div>
-        </div>
+        <% end %>
+        <.live_component module={HexaWeb.MapLayoutComponent} id="maplayout" />
+
+        <%= if @show do %>
+          <div class={"fixed z-10 inset-0 overflow-y-auto #{if @show, do: "fade-in", else: "hidden"}"} aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+              <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+              <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+              <div
+                class={"#{if @show, do: "fade-in-scale", else: "hidden"} sticky inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform sm:my-8 sm:align-middle sm:max-w-xl sm:w-full sm:p-6"}
+                phx-click-away="hide-modal"
+              >
+                <img src={@image_url} />
+              </div>
+            </div>
+          </div>
+        <% end %>
       </div>
-    <% end %>
     """
   end
 
@@ -52,12 +49,29 @@ defmodule HexaWeb.MapLive do
       |> assign(:current_user, current_user)
       |> assign(:show, false)
       |> assign(:selected_mode, false)
+      |> assign(:full_screen, false)
     }
   end
 
   def handle_params(_params, _url, socket) do
-    LayoutComponent.hide_modal()
+    MapLayoutComponent.hide_modal()
     {:noreply, push_event(socket, "reload-map", %{})}
+  end
+
+  def handle_event("full-screen", _full, socket) do
+    {
+      :noreply,
+      socket
+      |> assign(:full_screen, true)
+    }
+  end
+
+  def handle_event("not-full-screen", _full, socket) do
+    {
+      :noreply,
+      socket
+      |> assign(:full_screen, false)
+    }
   end
 
   def handle_event("cancel-selection", _we, socket) do
@@ -120,7 +134,7 @@ defmodule HexaWeb.MapLive do
   end
 
   defp show_upload_modal(socket, coord) do
-    LayoutComponent.show_modal(ImageUploadFormComponent, %{
+    MapLayoutComponent.show_modal(ImageUploadFormComponent, %{
       id: :new,
       confirm: {"Save", type: "submit", form: "image-form"},
       patch: Routes.map_path(Endpoint, :index),

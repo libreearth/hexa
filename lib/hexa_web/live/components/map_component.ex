@@ -3,7 +3,7 @@ defmodule HexaWeb.MapComponent do
 
   def render(assigns) do
     ~H"""
-      <div id="map" phx-hook="Map" class="down-map"></div>
+      <div id="map" phx-hook="Map" class="h-full" phx-update="ignore"></div>
     """
   end
 end
