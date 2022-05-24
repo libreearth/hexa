@@ -30,7 +30,7 @@ maphook = {
     
     var map = new maplibregl.Map({
       "container": 'map',
-      "style": 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+      "style": 'https://api.maptiler.com/maps/hybrid/style.json?key=W2LlLHFsWGyPrmHWYBF0',
       "center": current_location,
       "zoom": 16,
       "minZoom": 0,
@@ -48,12 +48,6 @@ maphook = {
     )
 
     map.addControl(new maplibregl.FullscreenControl({container: document.querySelector("#map-wrapper")}))
-    /*map.on("resize", () => {
-      if (document.fullscreenElement)
-        this.pushEvent("full-screen", {})
-      else
-        this.pushEvent("not-full-screen", {})
-    }) */
 
     map.on("click", (e) => {
       var features = map.queryRenderedFeatures(e.point);
@@ -98,6 +92,17 @@ maphook = {
         }
       })
 
+      map.addLayer({
+        "id": 'h3-layer-outline',
+        "type": 'line',
+        "source": 'h3-source',
+        "source-layer": 'h3-layer',
+        "paint": {
+          'line-color': '#000',
+          'line-width': 2
+        }
+      })
+
       //add a geojson layer for the location
       map.addSource('location-hexas', {
         type: 'geojson',
@@ -113,13 +118,31 @@ maphook = {
         'source': 'location-hexas',
         'layout': {},
         'paint': {
-          'fill-color': 'yellow',
+          'fill-color': 'white',
           'fill-outline-color': 'black',
           'fill-opacity': [
             "interpolate",
             ["linear"],
             ["get", "distance"],
-            0,0.3,
+            0,0.7,
+            12,0
+          ]
+        }
+      })
+
+      map.addLayer({
+        'id': 'location-hexas-layer-outline',
+        'type': 'line',
+        'source': 'location-hexas',
+        'layout': {},
+        'paint': {
+          'line-color': '#000',
+          'line-width': 2,
+          'line-opacity': [
+            "interpolate",
+            ["linear"],
+            ["get", "distance"],
+            0,0.7,
             12,0
           ]
         }
