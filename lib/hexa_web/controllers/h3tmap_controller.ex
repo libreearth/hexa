@@ -1,7 +1,7 @@
 defmodule HexaWeb.H3tMapController do
   use HexaWeb, :controller
 
-  alias Hexa.ImageLibrary
+  alias HexaLib.ImageLibrary
 
   @zooms %{
     "0" => 0,
@@ -30,7 +30,7 @@ defmodule HexaWeb.H3tMapController do
     "23" => 15,
     "24" => 15
   }
-  
+
   def index(conn, %{"z" => zs, "x" => xs, "y" => ys}) do
     x = String.to_integer(xs)
     y = String.to_integer(ys)
@@ -48,7 +48,7 @@ defmodule HexaWeb.H3tMapController do
   end
 
 
-  defp to_h3t(%Hexa.ImageLibrary.Image{} = image) do
+  defp to_h3t(%HexaLib.ImageLibrary.Image{} = image) do
     %{id: image.id, h3id: image.location, value: 5}
   end
 

@@ -11,6 +11,9 @@ config :hexa,
   replica: Hexa.ReplicaRepo,
   ecto_repos: [Hexa.Repo]
 
+config :hexalib,
+  ecto_repos: [HexaLib.Repo]
+
 # Configures the endpoint
 config :hexa, HexaWeb.Endpoint,
   url: [host: "localhost"],
@@ -59,7 +62,7 @@ config :logger, :console,
 # Use Jason for JSON parsing in Phoenix
 config :phoenix, :json_library, Jason
 
-config :hexa,
+config :hexalib,
   h3_level: 15
 
 # Import environment specific config. This must remain at the bottom

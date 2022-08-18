@@ -1,8 +1,8 @@
 defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
   use HexaWeb, :live_component
 
-  alias Hexa.ImageLibrary
-  alias Hexa.ImageLibrary.Image
+  alias HexaLib.ImageLibrary
+  alias HexaLib.ImageLibrary.Image
   alias HexaWeb.ProfileLive.ImageEntryComponent
 
   @max_entries 10
@@ -50,9 +50,10 @@ defmodule HexaWeb.HexaLive.ImageUploadFormComponent do
     socket = apply_params(socket, params, :insert)
     %{current_user: current_user} = socket.assigns
     changesets = socket.assigns.changesets
+    dir = Hexa.config([:files, :uploads_dir])
+    %{scheme: scheme, host: host, port: port} = Enum.into(Hexa.config([:files, :host]), %{})
 
-
-    case ImageLibrary.import_images(current_user, changesets, &consume_entry(socket, &1, &2)) do
+    case ImageLibrary.import_images(current_user.username, changesets, &consume_entry(socket, &1, &2), dir, scheme, host, port) do
       {:ok, images} ->
         {:noreply,
           socket

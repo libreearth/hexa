@@ -3,7 +3,7 @@ defmodule HexaWeb.MapLive do
 
   alias HexaWeb.MapComponent
   alias HexaWeb.MapLayoutComponent
-  alias Hexa.ImageLibrary
+  alias HexaLib.ImageLibrary
   alias HexaWeb.Endpoint
   alias HexaWeb.HexaLive.ImageUploadFormComponent
 

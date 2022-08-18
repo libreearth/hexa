@@ -2,7 +2,7 @@ import Config
 
 config :hexa, :files,
   uploads_dir: Path.expand("../priv/uploads", __DIR__),
-  host: [scheme: "http", host: "localhost", port: 4000],
+  host: [scheme: "https", host: "hexa.earth", port: 443],
   server_ip: "127.0.0.1",
   hostname: "localhost",
   transport_opts: []
@@ -17,7 +17,7 @@ config :hexa, Hexa.Repo,
   password: "postgres",
   database: "hexa_dev",
   hostname: "localhost",
-  port: 15432,
+  port: 5432,
   types: Hexa.PostgresTypes,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10
@@ -28,11 +28,19 @@ config :hexa, Hexa.ReplicaRepo,
   password: "postgres",
   database: "hexa_dev",
   hostname: "localhost",
-  port: 15432,
+  port: 5432,
   types: Hexa.PostgresTypes,
   show_sensitive_data_on_connection_error: true,
   pool_size: 10,
   priv: "priv/repo"
+
+  config :hexalib, HexaLib.Repo,
+    database: "hexa_repo_dev",
+    username: "postgres",
+    password: "postgres",
+    hostname: "localhost",
+    port: 5432,
+    types: HexaLib.PostgresTypes
 
 # For development, we disable any cache and enable
 # debugging and code reloading.

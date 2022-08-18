@@ -58,7 +58,8 @@ defmodule Hexa.MixProject do
       {:exexif, "~> 0.0.5"},
       {:geo_postgis, "~> 3.3"},
       {:h3, "~> 3.6"},
-      {:math, "~> 0.6.0"}
+      {:math, "~> 0.6.0"},
+      {:hexalib, path: "../hexalib"}
     ]
   end
 

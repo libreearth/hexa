@@ -1,8 +1,9 @@
 defmodule HexaWeb.HexaLive do
   use HexaWeb, :live_view
 
-  alias Hexa.{MediaLibrary, ImageLibrary, Accounts}
-  
+  alias Hexa.{MediaLibrary, Accounts}
+  alias HexaLib.ImageLibrary
+
   alias HexaWeb.Endpoint
   alias HexaWeb.LayoutComponent
   alias HexaWeb.HexaLive.ImageUploadFormComponent
@@ -54,26 +55,26 @@ defmodule HexaWeb.HexaLive do
     </div>
     """
   end
-    
+
   def mount(%{"profile_username" => profile_username}, _session, socket) do
     %{current_user: current_user} = socket.assigns
     profile =
       Accounts.get_user_by!(username: profile_username)
       |> MediaLibrary.get_profile!()
     {
-      :ok, 
+      :ok,
       assign(
-        socket, 
+        socket,
         owns_profile?: MediaLibrary.owns_profile?(current_user, profile),
         current_user: current_user,
-        images: ImageLibrary.list_images(current_user.id)
+        images: ImageLibrary.list_images(current_user.username)
       )
     }
   end
 
   def handle_params(params, _url, socket) do
     LayoutComponent.hide_modal()
-    {:noreply, socket |> assign(:images, ImageLibrary.list_images(socket.assigns.current_user.id)) |> apply_action(socket.assigns.live_action, params)}
+    {:noreply, socket |> assign(:images, ImageLibrary.list_images(socket.assigns.current_user.username)) |> apply_action(socket.assigns.live_action, params)}
   end
 
   defp apply_action(socket, :new, _params) do
